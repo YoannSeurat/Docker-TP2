@@ -1,6 +1,6 @@
 # Docker - TP2
 
-[Cliquer ici pour voir le TP1](https://github.com/YoannSeurat/Docker-TP2)
+[Cliquer ici pour voir le TP1](https://github.com/YoannSeurat/Docker-TP1)
 
 Ce TP présente les Github Actions et le monde du CI/CD.
 
