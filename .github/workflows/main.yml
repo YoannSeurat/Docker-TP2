@@ -36,6 +36,7 @@ jobs:
   # define job to build and publish docker image
   build-and-push-docker-image:
     needs: test-backend
+    if: github.event_name == 'push'
     # run only when code is compiling and tests are passing
     runs-on: ubuntu-24.04
 
@@ -44,6 +45,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Validate Docker Hub credentials
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          test -n "$DOCKERHUB_USERNAME" || { echo "Missing DOCKERHUB_USERNAME repository secret"; exit 1; }
+          test -n "$DOCKERHUB_PASSWORD" || { echo "Missing DOCKERHUB_PASSWORD repository secret"; exit 1; }
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
       - name: Build image and push backend
         uses: docker/build-push-action@v6
         with:
@@ -51,6 +66,7 @@ jobs:
           context: ./backend
           # Note: tags has to be all lower-case
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+          push: true
 
       - name: Build image and push database
         uses: docker/build-push-action@v6
@@ -59,6 +75,7 @@ jobs:
           context: ./database
           # Note: tags has to be all lower-case
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/database:latest
+          push: true
 
 
       - name: Build image and push httpd
@@ -68,3 +85,4 @@ jobs:
           context: ./server
           # Note: tags has to be all lower-case
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/server:latest
+          push: true
