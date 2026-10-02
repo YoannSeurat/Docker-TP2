@@ -1,44 +1,15 @@
-# Docker - TP1
+# Docker - TP2
 
-Ce TP présente l'utilisation de Docker avec une architecture en 3 services :
+[Cliquer ici pour voir le TP1](https://github.com/YoannSeurat/Docker-TP2)
 
-- `server` : serveur Apache accessible depuis le navigateur ;
-- `backend` : API Spring Boot ;
-- `database` : base de données PostgreSQL.
+Ce TP présente les Github Actions et le monde du CI/CD.
 
-Les services communiquent sur 2 réseaux privés `front-network` et `back-network` pour différencier les groupes `backend`/`database` et `backend`/`server`. Le `server` ne peut ainsi jamais communiquer avec la `database`. 
+A chaque push sur les branches `main` et `develop`, on gère : 
 
-Seul le serveur Apache est exposé sur le port `80`.
+- les tests du backend
+  - avec `mvn clean verify`
 
-## Lancement
-
-Depuis la racine du projet :
-
-```bash
-docker compose up --build -d
-```
-
-Accéder au serveur : [http://localhost/](http://localhost/)
-
-Les routes `/api/` sont transmises au backend, par exemple :
-
-```
-http://localhost/api/students/
-http://localhost/api/departments/
-```
-
-## Vérification
-
-```bash
-docker compose ps
-docker compose logs -f
-docker compose exec database pg_isready -U usr -d db
-```
-
-Le backend et la base de données ne sont pas directement accessibles depuis la machine hôte. Ils sont joignables uniquement entre conteneurs via `backend:8080` et `database:5432`.
-
-## Arrêt
-
-```bash
-docker compose down
-```
+- le build et push des images Docker
+  - en checkant si `DOCKERHUB_USERNAME` et `DOCKERHUB_TOKEN` existent dans les secrets du repo
+  - en se connectant à DockerHub
+  - enfin, pour chaque container on build l'image et on push sur DockerHub
