@@ -1,0 +1,39 @@
+services:
+    backend:
+        # builds the backend image using the Dockerfile in the backend directory
+        build: ./backend
+        # (not exposing ports)
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/db
+        networks:
+            - back-network
+            - front-network
+        depends_on:
+            # starts the database service before the backend service
+            - database
+
+    database:
+        build: ./database
+        # (not exposing ports)
+        networks:
+            - back-network
+        volumes:
+            - database-data:/var/lib/postgresql/data
+
+    server:
+        build: ./server
+        ports:
+            - "80:80"
+        networks:
+            - front-network
+        depends_on:
+            # starts the backend service before the server service
+            - backend
+
+# creates a private Docker network shared by all three services
+networks:
+  app-network:
+  app_bis-network:
+
+volumes:
+  database-data:
