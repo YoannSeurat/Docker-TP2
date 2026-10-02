@@ -39,6 +39,7 @@ jobs:
     if: github.event_name == 'push'
     # run only when code is compiling and tests are passing
     runs-on: ubuntu-24.04
+    environment: DOCKERHUB_CREDENTIALS
 
     # steps to perform in job
     steps:
